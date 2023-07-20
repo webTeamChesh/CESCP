@@ -10,7 +10,7 @@
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="./cescp.css" />
+    <link rel="stylesheet" href="/cescp.css" />
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
@@ -226,15 +226,11 @@
       </div>
       <!-- News -->
       <div class="my-news px-3" id="news">
-        <Pagination :msg="myHeader"> </Pagination>
         <h2 class="pt-3">Latest news</h2>
         <div class="row gy-2 mb-3">
           <div v-for="item in news" class="col-12 col-md-4">
             <div class="linkDiv card p-0 h-100 container position-relative">
-              <a
-                :title="item.title"
-                :href="`/News/News.aspx?item=${item.sys.slug}`"
-              >
+              <a :title="item.title" :href="`/news.html?item=${item.sys.slug}`">
                 <span class="link"></span>
               </a>
               <img
@@ -258,7 +254,9 @@
           </div>
         </div>
         <p class="text-end">
-          <a class="btn btn-primary mb-2" href="/">See all of our news</a>
+          <a class="btn btn-primary mb-2" href="/news.html"
+            >See all of our news</a
+          >
         </p>
       </div>
 
@@ -301,7 +299,6 @@
       const app = createApp({
         data() {
           return {
-            myHeader: "Component",
             news: [],
             accessToken: "QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I",
             url: "https://cms-chesheast.cloud.contensis.com/api/delivery/projects/",
@@ -377,11 +374,6 @@
         mounted() {
           this.getEntries("localSafeguardingChildrensBoard", "news");
         },
-      });
-
-      app.component("Pagination", {
-        props: ["msg"],
-        template: "<h1>{{this.msg}}</h1><p>Test</p>",
       });
 
       app.mount("#news");

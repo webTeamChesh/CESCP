@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./cescp.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>News</title>
+  </head>
+  <body>
+    <div class="container my-3">
+      <!-- News -->
+      <div class="my-news p-3" id="news">
+        <h1
+          ref="pageTop"
+          class="pt-3"
+          :class="{'visually-hidden': showSelectedItem}"
+        >
+          News
+        </h1>
+
+        <div v-if="!showSelectedItem" class="row gy-2 mb-3">
+          <Pagination></Pagination>
+          <div v-for="item in news" class="col-12 col-md-4">
+            <div class="linkDiv card p-0 h-100 container position-relative">
+              <a :title="item.title">
+                <span class="link" @click="setSelectedItem(item)"></span>
+              </a>
+              <img
+                v-if="item.image"
+                class="img-fluid img-card-top"
+                v-bind:src="`https://www.cescp.org.uk/${item.image.asset.sys.uri}?format=webp`"
+                v-bind:alt="item.image.altText"
+              />
+              <div class="card-body">
+                <div class="row h-100 d-flex">
+                  <div class="col-12">
+                    <h3 class="mb-1 fs-4 text-center">
+                      <strong>{{ item.title }}</strong>
+                    </h3>
+                    <p class="text-center">{{formatDate(item.date)}}</p>
+                    <p>{{item.summary}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div v-if="showSelectedItem">
+          <button
+            ref="selectedItem"
+            v-on:click="unSetSelectedItem"
+            role="button"
+            class="btn btn-primary mt-2"
+          >
+            Back to results
+          </button>
+          <h1 class="text-center">{{ selectedItem.title }}</h1>
+          <div class="text-center my-2">
+            <img
+              v-if="selectedItem.image"
+              class="img-fluid"
+              v-bind:src="`https://www.cescp.org.uk/${selectedItem.image.asset.sys.uri}?format=webp`"
+              v-bind:alt="selectedItem.image.altText"
+            />
+          </div>
+          <div class="col-12">
+            <hr />
+            <button
+              v-on:click="unSetSelectedItem"
+              role="button"
+              class="btn btn-primary"
+            >
+              Back to results
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="my-foot d-flex container-fluid px-0">
+      <p class="mx-auto pt-2">&copy; Footer stuff</p>
+    </footer>
+
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            news: [],
+            accessToken: "QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I",
+            url: "https://cms-chesheast.cloud.contensis.com/api/delivery/projects/",
+            contentType: "news",
+            project: "localSafeguardingChildrensBoard",
+            linkDepth: 5, // leave at 5 if unsure.
+            item: undefined,
+            year: new Date().getFullYear(),
+            fromDate: "",
+            toDate: "",
+            dateOptions: {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            },
+            rxDate: /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?(?:\.\d*)?Z?$/,
+            showPageBtns: true,
+            showFirstLastBtns: false,
+            showPaginationTop: true,
+            showPaginationBottom: true,
+            numOfPaginationBtns: 0,
+            currentPageIndex: 0,
+            totalCount: null,
+            pageCount: null,
+            pageBtns: [],
+            selectedItem: null,
+            showSelectedItem: false,
+            title: "",
+          };
+        },
+        methods: {
+          prependUrl: function (value) {
+            return `${location.protocol}//${location.host}${location.pathname}?item=${value}`;
+          },
+          setSelectedItem: function (item) {
+            this.selectedItem = item;
+            document.title = item.entryTitle;
+            this.showSelectedItem = true;
+            new URLSearchParams(window.location.search).delete("item");
+            window.history.pushState("", "", this.prependUrl(item.sys.slug));
+            //setTimeout(() => this.$refs.selectedItem.scrollIntoView(), 100);
+          },
+          unSetSelectedItem: function () {
+            this.$refs.pageTop.scrollIntoView();
+            this.selectedItem = null;
+            document.title = this.title;
+            this.showSelectedItem = false;
+            window.history.pushState(
+              {},
+              "",
+              document.location.href.split("?")[0]
+            );
+          },
+          back: function () {
+            location.reload();
+          },
+          goToPage: function (pageNum) {
+            this.$refs.pageTop.scrollIntoView();
+            this.news = this.pages[pageNum - 1];
+            this.currentPageIndex = pageNum - 1;
+          },
+          calculatePages: function () {
+            this.totalCount = this.items.length;
+            this.pageCount =
+              this.totalCount > 0
+                ? Math.ceil(this.totalCount / this.pageSize)
+                : 0;
+            this.currentPageIndex = 0;
+            this.pageBtns = Array.from(
+              { length: this.pageCount },
+              (_, i) => i + 1
+            );
+            this.createPages();
+            this.news = this.pages[0];
+          },
+          createPages: function () {
+            this.pages = [
+              ...Array(Math.ceil(this.items.length / this.pageSize)),
+            ].map((_) => this.items.splice(0, this.pageSize));
+          },
+          createDates: function (arr) {
+            return arr.map((e) => {
+              return Object.fromEntries(
+                Object.entries(e).map(([k, v]) => {
+                  if (k.toLowerCase().includes("date")) {
+                    if (typeof v === "string" && v.match(this.rxDate)) {
+                      return [k, new Date(v)];
+                    } else if (typeof v === "object") {
+                      try {
+                        return [
+                          k,
+                          {
+                            from: new Date(v["from"]),
+                            to: new Date(v["to"]),
+                          },
+                        ];
+                      } catch (err) {
+                        return [k, v];
+                      }
+                    }
+                  } else {
+                    return [k, v];
+                  }
+                })
+              );
+            });
+          },
+          formatDate: function (value) {
+            return value.toLocaleString("en-GB", this.dateOptions);
+          },
+          baseUrl: function () {
+            return `${this.url}${this.project}/contentTypes/${this.contentType}/entries?accessToken=${this.accessToken}&pageSize=1000`;
+          },
+          getEntries: function (url, slug) {
+            fetch(url)
+              .then((response) => {
+                return response.json();
+              })
+              .then((data) => {
+                this.news = this.createDates(data.items);
+                if (this.news.length > 0) {
+                  this.news.sort();
+                }
+                this.news = this.news.slice(0, 3);
+                if (slug !== null) {
+                  this.setSelectedItem(
+                    this.news.find((elem) => elem.sys.slug === slug)
+                  );
+                }
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          },
+        },
+        mounted() {
+          this.title = document.title;
+          const params = new Proxy(
+            new URLSearchParams(window.location.search),
+            {
+              get: (searchParams, prop) => searchParams.get(prop),
+            }
+          );
+          this.getEntries(this.baseUrl(), params.item);
+          window.addEventListener("popstate", this.back, false);
+        },
+        beforeDestroy() {
+          window.removeEventListener("popstate", this.back);
+        },
+      });
+      app.component("Pagination", {
+        props: [],
+        template: "<p>To do: pagination</p>",
+      });
+      app.mount("#news");
+    </script>
+  </body>
+</html>
