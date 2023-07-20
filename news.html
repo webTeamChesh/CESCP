@@ -32,7 +32,13 @@
         </h1>
 
         <div v-if="!showSelectedItem" class="row gy-2 mb-3">
-          <Pagination></Pagination>
+          <Pagination
+            :pageCount="pageCount"
+            :totalCount="totalCount"
+            :currentPageIndex="currentPageIndex"
+            :goToPage="goToPage"
+            :currentpageIndex="currentPageIndex"
+          ></Pagination>
           <div v-for="item in news" class="col-12 col-md-4">
             <div class="linkDiv card p-0 h-100 container position-relative">
               <a :title="item.title">
@@ -106,7 +112,6 @@
             project: "localSafeguardingChildrensBoard",
             linkDepth: 5, // leave at 5 if unsure.
             item: undefined,
-            year: new Date().getFullYear(),
             fromDate: "",
             toDate: "",
             dateOptions: {
@@ -117,13 +122,14 @@
             },
             rxDate: /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?(?:\.\d*)?Z?$/,
             showPageBtns: true,
+            items: [],
             showFirstLastBtns: false,
             showPaginationTop: true,
             showPaginationBottom: true,
             numOfPaginationBtns: 0,
             currentPageIndex: 0,
-            totalCount: null,
-            pageCount: null,
+            totalCount: 0,
+            pageCount: 0,
             pageBtns: [],
             selectedItem: null,
             showSelectedItem: false,
@@ -176,9 +182,14 @@
             this.news = this.pages[0];
           },
           createPages: function () {
-            this.pages = [
-              ...Array(Math.ceil(this.items.length / this.pageSize)),
-            ].map((_) => this.items.splice(0, this.pageSize));
+            let temp = Math.ceil(this.items.length / this.pageSize);
+            if (isNaN(temp)) {
+              this.pages = [this.items];
+            } else {
+              this.pages = [...Array(temp)].map((_) =>
+                this.items.splice(0, this.pageSize)
+              );
+            }
           },
           createDates: function (arr) {
             return arr.map((e) => {
@@ -219,16 +230,18 @@
                 return response.json();
               })
               .then((data) => {
-                this.news = this.createDates(data.items);
-                if (this.news.length > 0) {
-                  this.news.sort();
+                this.items = this.createDates(data.items);
+                if (this.items.length > 0) {
+                  this.items.sort();
                 }
-                this.news = this.news.slice(0, 3);
+                this.items = this.items.slice(0, 3);
                 if (slug !== null) {
                   this.setSelectedItem(
-                    this.news.find((elem) => elem.sys.slug === slug)
+                    this.items.find((elem) => elem.sys.slug === slug)
                   );
                 }
+                console.log(this.items);
+                this.calculatePages();
               })
               .catch((error) => {
                 console.log(error);
@@ -251,8 +264,65 @@
         },
       });
       app.component("Pagination", {
-        props: [],
-        template: "<p>To do: pagination</p>",
+        props: [
+          "pageCount",
+          "totalCount",
+          "currentPageIndex",
+          "goToPage",
+          "currentPageIndex",
+        ],
+        template: `<div>
+        <nav role="navigation" aria-label="Results data navigation">
+          <ol class="pagination d-flex flex-wrap my-2 ms-0">
+            <li class="page-item" v-bind:class="{ disabled: currentPageIndex === 0 }">
+              <button
+                      class="page-link"
+                      type="button"
+                      v-bind:disabled="currentPageIndex === 0 ? true : false"
+                      v-on:click="goToPage(currentPageIndex)"
+                    >
+                      Previous
+                    </button>
+            </li>
+            <li v-if="showFirstLastBtns" class="page-item">
+              <button
+                      class="page-link"
+                      type="button"
+                      aria-label="Next"
+                      v-on:click="goToPage(1)"
+                    >
+                      <span aria-hidden="true">&laquo;</span>
+                    </button>
+            </li>
+            <li v-if="showPageBtns" v-for="pageBtn in pageBtns" class="page-item" v-bind:class="{ disabled: currentPageIndex === pageBtn - 1 }">
+              <button
+                      class="page-link"
+                      type="button"
+                      v-on:click="goToPage(pageBtn)"
+                    >
+                      {{ pageBtn}}
+                    </button>
+            </li>
+            <li class="page-item" v-bind:class="{ disabled: currentPageIndex + 1 >= pageCount }">
+              <button
+                      class="page-link"
+                      type="button"
+                      v-bind:disabled="currentPageIndex + 1 >= pageCount ? true : false"
+                      v-on:click="goToPage(currentPageIndex + 2)"
+                    >
+                      Next
+                    </button>
+            </li>
+          </ol>
+        </nav>
+        <div  class="api-results-info">
+            Total results: <strong>{{ totalCount }}</strong>
+          <p v-if="pageCount > 1">
+            Current page:
+            <strong>{{ currentPageIndex+1 }}</strong>
+          </p>
+        </div>
+        </div>`,
       });
       app.mount("#news");
     </script>
