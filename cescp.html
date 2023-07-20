@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="./cescp.css" />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <title>Cheshire East Children Safeguarding Partnership</title>
+  </head>
+  <body>
+    <header class="my-head container-fluid px-0">
+      <div class="px-3 py-3 row g-0 d-flex">
+        <div class="linkDiv col-6 col-lg-11 d-flex">
+          <a title="Home" href="/"
+            ><span class="link"
+              ><span class="visually-hidden"
+                >Cheshire East Children Safeguarding Partnership</span
+              ></span
+            ></a
+          >
+          <img
+            class="img-fluid rounded-circle"
+            alt="Logo"
+            src="./lscb-logo-no-text.gif"
+          />
+          <div class="header-text align-self-center">
+            <p class="fs-3 ps-3">
+              Cheshire East Children Safeguarding Partnership
+            </p>
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-1 align-self-center">
+          <nav class="w-auto navbar navbar-expand-lg justify-content-center">
+            <button
+              class="ms-auto me-2 navbar-toggler hsWhite"
+              aria-controls="navbarSupportedContent"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent"
+            >
+              <span class="navbar-toggler-icon hsWhite" role="link"></span>
+            </button>
+          </nav>
+        </div>
+      </div>
+    </header>
+    <nav class="p-0 w-100 navbar navbar-expand-lg">
+      <div
+        id="navbarSupportedContent"
+        class="w-100 my-nav collapse navbar-collapse"
+      >
+        <ol class="navbar-nav mx-auto">
+          <li class="nav-item dropdown mx-auto">
+            <a class="nav-link" href="">Home </a>
+          </li>
+          <li class="nav-item dropdown mx-auto">
+            <a class="nav-link" href="">About Us</a>
+          </li>
+          <li class="nav-item dropdown mx-auto">
+            <a
+              id="childrenDropdown"
+              class="nav-link dropdown-toggle"
+              role="button"
+              aria-expanded="false"
+              data-bs-toggle="dropdown"
+              href="#"
+            >
+              Children &amp; Young People
+            </a>
+            <ol class="dropdown-menu" aria-labelledby="childrenDropdown">
+              <li class="text-center">
+                <a class="dropdown-item" href="">More for children</a>
+              </li>
+            </ol>
+          </li>
+          <li class="nav-item dropdown mx-auto">
+            <a
+              id="parentsDropdown"
+              class="nav-link dropdown-toggle"
+              role="button"
+              aria-expanded="false"
+              data-bs-toggle="dropdown"
+              href="#"
+            >
+              Parents &amp; Carers
+            </a>
+            <ol class="dropdown-menu" aria-labelledby="parentsDropdown">
+              <li class="text-center">
+                <a class="dropdown-item" href="">More for parents</a>
+              </li>
+            </ol>
+          </li>
+
+          <li class="nav-item dropdown mx-auto">
+            <a
+              id="professionalsDropdown"
+              class="nav-link dropdown-toggle"
+              role="button"
+              aria-expanded="false"
+              data-bs-toggle="dropdown"
+              href="#"
+            >
+              Professionals
+            </a>
+            <ol class="dropdown-menu" aria-labelledby="professionalsDropdown">
+              <li class="text-center">
+                <a class="dropdown-item" href="">More for professionals</a>
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- Call to action -->
+    <div class="container">
+      <div class="text-center mt-3 row g-0 gy-3">
+        <div class="col-12 col-md-6">
+          <a class="call-to-action btn btn-danger mx-3" href="#"
+            >Report a concern about a child</a
+          >
+        </div>
+        <div class="col-12 col-md-6">
+          <a class="call-to-action btn btn-danger mx-3" href="#"
+            >Child Death Reviews</a
+          >
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="row gy-2 my-3">
+        <div class="col-12 col-md-4 d-flex">
+          <div class="h-100">
+            <div class="linkDiv p-0 card h-100 container">
+              <span
+                id="children-card"
+                role="button"
+                class="link"
+                data-bs-toggle="collapse"
+                data-bs-target="#children"
+                aria-expanded="false"
+                aria-controls="children"
+              ></span>
+              <img src="http://www.placehold.co/600x400" />
+              <div class="row">
+                <div class="col-12 text-center">
+                  <p class="pt-2 mb-1">Children &amp; Young People</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="children"
+          class="col-12 mx-auto my-3 p-3 rounded sub-menus text-center collapse"
+        >
+          Children sub-menu
+        </div>
+        <div class="col-12 col-md-4 d-flex">
+          <div class="h-100">
+            <div class="linkDiv p-0 card h-100 container">
+              <span
+                role="button"
+                class="link"
+                data-bs-toggle="collapse"
+                data-bs-target="#parents"
+                aria-expanded="false"
+                aria-controls="parents"
+              ></span>
+              <img src="http://www.placehold.co/600x400" />
+              <div class="row">
+                <div class="col-12 text-center">
+                  <p class="pt-2 mb-1">Parents and Carers</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="parents"
+          class="col-12 mx-auto my-3 p-3 rounded sub-menus text-center collapse"
+        >
+          Parents sub-menu
+        </div>
+        <div class="col-12 col-md-4 d-flex">
+          <div class="h-100">
+            <div class="linkDiv p-0 card h-100 container">
+              <span
+                class="link"
+                role="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#professionals"
+                aria-expanded="false"
+                aria-controls="professionals"
+              ></span>
+              <img src="http://www.placehold.co/600x400" />
+              <div class="row">
+                <div class="col-12 text-center">
+                  <p class="pt-2 mb-1">Professionals</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          id="professionals"
+          class="col-12 mx-auto my-3 p-3 rounded sub-menus text-center collapse"
+        >
+          Professionals sub-menu
+        </div>
+      </div>
+      <!-- News -->
+      <div class="my-news px-3" id="news">
+        <Pagination :msg="myHeader"> </Pagination>
+        <h2 class="pt-3">Latest news</h2>
+        <div class="row gy-2 mb-3">
+          <div v-for="item in news" class="col-12 col-md-4">
+            <div class="linkDiv card p-0 h-100 container position-relative">
+              <a
+                :title="item.title"
+                :href="`/News/News.aspx?item=${item.sys.slug}`"
+              >
+                <span class="link"></span>
+              </a>
+              <img
+                v-if="item.image !== null"
+                class="img-fluid img-card-top"
+                v-bind:src="`https://www.cescp.org.uk/${item.image.asset.sys.uri}?format=webp`"
+                v-bind:alt="item.image.altText"
+              />
+              <div class="card-body">
+                <div class="row h-100 d-flex">
+                  <div class="col-12">
+                    <h3 class="mb-1 fs-4 text-center">
+                      <strong>{{ item.title }}</strong>
+                    </h3>
+                    <p class="text-center">{{formatDate(item.date)}}</p>
+                    <p>{{item.summary}}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-end">
+          <a class="btn btn-primary mb-2" href="/">See all of our news</a>
+        </p>
+      </div>
+
+      <div class="my-map">
+        <p class="text-center">Map</p>
+      </div>
+
+      <div class="my-partners">
+        <p class="text-center">Partners</p>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="newsletter">
+        <p class="text-center">Sign up for our newsletter</p>
+      </div>
+    </div>
+
+    <!-- Quick links etc. -->
+    <div class="my-links">
+      <div class="container">
+        <div class="pt-3 row g-0">
+          <div class="col-12 col-md-4">
+            <p><strong>Quick links</strong></p>
+          </div>
+          <div class="col-12 col-md-4">
+            <p><strong>Contact details</strong></p>
+          </div>
+          <div class="col-12 col-md-4">
+            <p><strong>Connect with us</strong></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="my-foot d-flex container-fluid px-0">
+      <p class="mx-auto pt-2">&copy; Footer stuff</p>
+    </footer>
+
+    <script>
+      const { createApp } = Vue;
+      const app = createApp({
+        data() {
+          return {
+            myHeader: "Component",
+            news: [],
+            accessToken: "QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I",
+            url: "https://cms-chesheast.cloud.contensis.com/api/delivery/projects/",
+            linkDepth: 5, // leave at 5 if unsure.
+            item: undefined,
+            year: new Date().getFullYear(),
+            fromDate: "",
+            toDate: "",
+            dateOptions: {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            },
+            rxDate: /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?(?:\.\d*)?Z?$/,
+          };
+        },
+        methods: {
+          imgUrl: function (v) {
+            return `https://www.cescp.org.uk/${v}?format=webp`;
+          },
+          createDates: function (arr) {
+            return arr.map((e) => {
+              return Object.fromEntries(
+                Object.entries(e).map(([k, v]) => {
+                  if (k.toLowerCase().includes("date")) {
+                    if (typeof v === "string" && v.match(this.rxDate)) {
+                      return [k, new Date(v)];
+                    } else if (typeof v === "object") {
+                      try {
+                        return [
+                          k,
+                          {
+                            from: new Date(v["from"]),
+                            to: new Date(v["to"]),
+                          },
+                        ];
+                      } catch (err) {
+                        return [k, v];
+                      }
+                    }
+                  } else {
+                    return [k, v];
+                  }
+                })
+              );
+            });
+          },
+          formatDate: function (value) {
+            return value.toLocaleString("en-GB", this.dateOptions);
+          },
+          baseUrl: function (project, cType) {
+            return `${this.url}${project}/contentTypes/${cType}/entries?accessToken=${this.accessToken}&pageSize=1000`;
+          },
+          getEntries: function (project, cType) {
+            fetch(this.baseUrl(project, cType))
+              .then((response) => {
+                return response.json();
+              })
+              .then((data) => {
+                this.news = this.createDates(data.items);
+                if (this.news.length > 0) {
+                  this.news.sort();
+                }
+                this.news = this.news.slice(0, 3);
+                console.log(this.news[0]);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          },
+        },
+        mounted() {
+          this.getEntries("localSafeguardingChildrensBoard", "news");
+        },
+      });
+
+      app.component("Pagination", {
+        props: ["msg"],
+        template: "<h1>{{this.msg}}</h1><p>Test</p>",
+      });
+
+      app.mount("#news");
+    </script>
+  </body>
+</html>
