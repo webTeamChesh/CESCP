@@ -3,52 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="shortcut icon" href="./favicon.ico" />
+    <link rel="shortcut icon" href="/favicon.ico" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="./cescp.css" />
+    <link rel="stylesheet" href="/cescp.css" />
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"
     ></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <title>News</title>
   </head>
   <body>
-    <div class="container my-3">
-      <!-- News -->
-      <div class="my-news p-3" id="news">
-        <h1
-          ref="pageTop"
-          class="pt-3"
-          :class="{'visually-hidden': showSelectedItem}"
-        >
+    <div class="my-news p-3" id="news">
+      <div class="pt-3">
+        <h1 ref="pageTop" :class="{'visually-hidden': showSelectedItem}">
           News
         </h1>
-
         <div v-if="!showSelectedItem" class="row gy-2 mb-3">
-          <Pagination
-            :pageCount="pageCount"
-            :totalCount="totalCount"
-            :currentPageIndex="currentPageIndex"
-            :goToPage="goToPage"
-            :currentpageIndex="currentPageIndex"
-          ></Pagination>
+          <pagination
+            :total="totalCount"
+            :index="currentPageIndex"
+            :btns="pageBtns"
+            :gotopage="goToPage"
+            :pages="pageCount"
+          ></pagination>
+          <!-- cards -->
           <div v-for="item in news" class="col-12 col-md-4">
-            <div class="linkDiv card p-0 h-100 container position-relative">
+            <div class="link-div card p-0 h-100 container position-relative">
               <a :title="item.title">
                 <span class="link" @click="setSelectedItem(item)"></span>
               </a>
               <img
                 v-if="item.image"
                 class="img-fluid img-card-top"
-                v-bind:src="`https://www.cescp.org.uk/${item.image.asset.sys.uri}?format=webp`"
-                v-bind:alt="item.image.altText"
+                :src="`https://www.cescp.org.uk/${item.image.asset.sys.uri}?format=webp`"
+                :alt="item.image.altText"
               />
               <div class="card-body">
                 <div class="row h-100 d-flex">
@@ -65,33 +60,35 @@
           </div>
         </div>
         <div v-if="showSelectedItem">
-          <button
-            ref="selectedItem"
-            v-on:click="unSetSelectedItem"
-            role="button"
-            class="btn btn-primary mt-2"
-          >
-            Back to results
-          </button>
-          <h1 class="text-center">{{ selectedItem.title }}</h1>
-          <div class="text-center my-2">
-            <img
-              v-if="selectedItem.image"
-              class="img-fluid"
-              v-bind:src="`https://www.cescp.org.uk/${selectedItem.image.asset.sys.uri}?format=webp`"
-              v-bind:alt="selectedItem.image.altText"
-            />
-          </div>
-          <div class="col-12">
-            <hr />
+          <div>
             <button
+              ref="selectedItem"
               v-on:click="unSetSelectedItem"
               role="button"
-              class="btn btn-primary"
+              class="btn btn-primary mt-2"
             >
               Back to results
             </button>
           </div>
+          <div class="text-center">
+            <h1>{{ selectedItem.title }}</h1>
+            <img
+              v-if="selectedItem.image"
+              class="img-fluid py-2"
+              :src="`https://www.cescp.org.uk/${selectedItem.image.asset.sys.uri}?format=webp`"
+              :alt="selectedItem.image.altText"
+            />
+
+            <p class="text-center">{{formatDate(selectedItem.date)}}</p>
+            <div v-html="selectedItem.body"></div>
+          </div>
+          <button
+            v-on:click="unSetSelectedItem"
+            role="button"
+            class="btn btn-primary"
+          >
+            Back to results
+          </button>
         </div>
       </div>
     </div>
@@ -99,232 +96,183 @@
     <footer class="my-foot d-flex container-fluid px-0">
       <p class="mx-auto pt-2">&copy; Footer stuff</p>
     </footer>
-
-    <script>
-      const { createApp } = Vue;
-      const app = createApp({
-        data() {
-          return {
-            news: [],
-            accessToken: "QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I",
-            url: "https://cms-chesheast.cloud.contensis.com/api/delivery/projects/",
-            contentType: "news",
-            project: "localSafeguardingChildrensBoard",
-            linkDepth: 5, // leave at 5 if unsure.
-            item: undefined,
-            fromDate: "",
-            toDate: "",
-            dateOptions: {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            },
-            rxDate: /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?(?:\.\d*)?Z?$/,
-            showPageBtns: true,
-            items: [],
-            showFirstLastBtns: false,
-            showPaginationTop: true,
-            showPaginationBottom: true,
-            numOfPaginationBtns: 0,
-            currentPageIndex: 0,
-            totalCount: 0,
-            pageCount: 0,
-            pageBtns: [],
-            selectedItem: null,
-            showSelectedItem: false,
-            title: "",
-          };
-        },
-        methods: {
-          prependUrl: function (value) {
-            return `${location.protocol}//${location.host}${location.pathname}?item=${value}`;
-          },
-          setSelectedItem: function (item) {
-            this.selectedItem = item;
-            document.title = item.entryTitle;
-            this.showSelectedItem = true;
-            new URLSearchParams(window.location.search).delete("item");
-            window.history.pushState("", "", this.prependUrl(item.sys.slug));
-            //setTimeout(() => this.$refs.selectedItem.scrollIntoView(), 100);
-          },
-          unSetSelectedItem: function () {
-            this.$refs.pageTop.scrollIntoView();
-            this.selectedItem = null;
-            document.title = this.title;
-            this.showSelectedItem = false;
-            window.history.pushState(
-              {},
-              "",
-              document.location.href.split("?")[0]
-            );
-          },
-          back: function () {
-            location.reload();
-          },
-          goToPage: function (pageNum) {
-            this.$refs.pageTop.scrollIntoView();
-            this.news = this.pages[pageNum - 1];
-            this.currentPageIndex = pageNum - 1;
-          },
-          calculatePages: function () {
-            this.totalCount = this.items.length;
-            this.pageCount =
-              this.totalCount > 0
-                ? Math.ceil(this.totalCount / this.pageSize)
-                : 0;
-            this.currentPageIndex = 0;
-            this.pageBtns = Array.from(
-              { length: this.pageCount },
-              (_, i) => i + 1
-            );
-            this.createPages();
-            this.news = this.pages[0];
-          },
-          createPages: function () {
-            let temp = Math.ceil(this.items.length / this.pageSize);
-            if (isNaN(temp)) {
-              this.pages = [this.items];
-            } else {
-              this.pages = [...Array(temp)].map((_) =>
-                this.items.splice(0, this.pageSize)
-              );
-            }
-          },
-          createDates: function (arr) {
-            return arr.map((e) => {
-              return Object.fromEntries(
-                Object.entries(e).map(([k, v]) => {
-                  if (k.toLowerCase().includes("date")) {
-                    if (typeof v === "string" && v.match(this.rxDate)) {
-                      return [k, new Date(v)];
-                    } else if (typeof v === "object") {
-                      try {
-                        return [
-                          k,
-                          {
-                            from: new Date(v["from"]),
-                            to: new Date(v["to"]),
-                          },
-                        ];
-                      } catch (err) {
-                        return [k, v];
-                      }
-                    }
-                  } else {
-                    return [k, v];
-                  }
-                })
-              );
-            });
-          },
-          formatDate: function (value) {
-            return value.toLocaleString("en-GB", this.dateOptions);
-          },
-          baseUrl: function () {
-            return `${this.url}${this.project}/contentTypes/${this.contentType}/entries?accessToken=${this.accessToken}&pageSize=1000`;
-          },
-          getEntries: function (url, slug) {
-            fetch(url)
-              .then((response) => {
-                return response.json();
-              })
-              .then((data) => {
-                this.items = this.createDates(data.items);
-                if (this.items.length > 0) {
-                  this.items.sort();
-                }
-                this.items = this.items.slice(0, 3);
-                if (slug !== null) {
-                  this.setSelectedItem(
-                    this.items.find((elem) => elem.sys.slug === slug)
-                  );
-                }
-                console.log(this.items);
-                this.calculatePages();
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          },
-        },
-        mounted() {
-          this.title = document.title;
-          const params = new Proxy(
-            new URLSearchParams(window.location.search),
-            {
-              get: (searchParams, prop) => searchParams.get(prop),
-            }
-          );
-          this.getEntries(this.baseUrl(), params.item);
-          window.addEventListener("popstate", this.back, false);
-        },
-        beforeDestroy() {
-          window.removeEventListener("popstate", this.back);
-        },
-      });
-      app.component("Pagination", {
-        props: [
-          "pageCount",
-          "totalCount",
-          "currentPageIndex",
-          "goToPage",
-          "currentPageIndex",
-        ],
-        template: `<div>
-        <nav role="navigation" aria-label="Results data navigation">
+  </body>
+  <script>
+    const Pagination = {
+      props: ['total', 'pages', 'btns', 'gotopage', 'index'],
+      template: `<div><nav role="navigation" aria-label="Results data navigation">
           <ol class="pagination d-flex flex-wrap my-2 ms-0">
-            <li class="page-item" v-bind:class="{ disabled: currentPageIndex === 0 }">
+            <li class="page-item" :class="{ disabled: index === 0 }">
               <button
                       class="page-link"
                       type="button"
-                      v-bind:disabled="currentPageIndex === 0 ? true : false"
-                      v-on:click="goToPage(currentPageIndex)"
+                      :disabled="index === 0 ? true : false"
+                      v-on:click="gotopage(index)"
                     >
                       Previous
                     </button>
             </li>
-            <li v-if="showFirstLastBtns" class="page-item">
+            <li v-for="pageBtn in btns" class="page-item" :class="{ disabled: index === pageBtn - 1 }">
               <button
                       class="page-link"
+      :class="{current: index === pageBtn -1}"
                       type="button"
-                      aria-label="Next"
-                      v-on:click="goToPage(1)"
-                    >
-                      <span aria-hidden="true">&laquo;</span>
-                    </button>
-            </li>
-            <li v-if="showPageBtns" v-for="pageBtn in pageBtns" class="page-item" v-bind:class="{ disabled: currentPageIndex === pageBtn - 1 }">
-              <button
-                      class="page-link"
-                      type="button"
-                      v-on:click="goToPage(pageBtn)"
+                      v-on:click="gotopage(pageBtn)"
                     >
                       {{ pageBtn}}
                     </button>
             </li>
-            <li class="page-item" v-bind:class="{ disabled: currentPageIndex + 1 >= pageCount }">
+            <li class="page-item" :class="{ disabled: index + 1 >= pages }">
               <button
                       class="page-link"
                       type="button"
-                      v-bind:disabled="currentPageIndex + 1 >= pageCount ? true : false"
-                      v-on:click="goToPage(currentPageIndex + 2)"
+                      :disabled="index + 1 >= pages ? true : false"
+                      v-on:click="gotopage(index + 2)"
                     >
                       Next
                     </button>
             </li>
           </ol>
         </nav>
-        <div  class="api-results-info">
-            Total results: <strong>{{ totalCount }}</strong>
-          <p v-if="pageCount > 1">
-            Current page:
-            <strong>{{ currentPageIndex+1 }}</strong>
-          </p>
-        </div>
-        </div>`,
-      });
-      app.mount("#news");
-    </script>
-  </body>
+        <div>
+      <p>Total results: <strong>{{ total }}</strong></p>
+      </div></div>`,
+    };
+
+    const { createApp } = Vue;
+    const app = createApp({
+      data() {
+        return {
+          news: [],
+          accessToken: 'QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I',
+          url: 'https://cms-chesheast.cloud.contensis.com/api/delivery/projects/',
+          contentType: 'news',
+          project: 'localSafeguardingChildrensBoard',
+          linkDepth: 5, // leave at 5 if unsure.
+          dateOptions: {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          },
+          rxDate: /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?(?:\.\d*)?Z?$/,
+          items: [],
+          currentPageIndex: 0,
+          totalCount: 0,
+          pageCount: 0,
+          pageBtns: [],
+          pageSize: 3,
+          selectedItem: {},
+          showSelectedItem: false,
+          title: '',
+        };
+      },
+      components: {
+        Pagination,
+      },
+      methods: {
+        prependUrl: function (value) {
+          return `${location.protocol}//${location.host}${location.pathname}?item=${value}`;
+        },
+        setSelectedItem: function (item) {
+          this.selectedItem = item;
+          document.title = item.entryTitle;
+          this.showSelectedItem = true;
+          new URLSearchParams(window.location.search).delete('item');
+          window.history.pushState('', '', this.prependUrl(item.sys.slug));
+          setTimeout(() => this.$refs.selectedItem.scrollIntoView(), 100);
+        },
+        unSetSelectedItem: function () {
+          this.$refs.pageTop.scrollIntoView();
+          document.title = this.title;
+          this.showSelectedItem = false;
+          window.history.pushState(
+            {},
+            '',
+            document.location.href.split('?')[0]
+          );
+        },
+        back: function () {
+          location.reload();
+        },
+        goToPage: function (pageNum) {
+          this.$refs.pageTop.scrollIntoView();
+          this.news = this.pages[pageNum - 1];
+          this.currentPageIndex = pageNum - 1;
+        },
+        calculatePages: function () {
+          this.totalCount = this.items.length;
+          this.pageCount = Math.ceil(this.totalCount / this.pageSize);
+          this.currentPageIndex = 0;
+          this.pageBtns = Array.from(
+            { length: this.pageCount },
+            (_, i) => i + 1
+          );
+          this.createPages();
+          this.news = this.pages[0];
+        },
+        createPages: function () {
+          this.pages = [
+            ...Array(Math.ceil(this.items.length / this.pageSize)),
+          ].map((_) => this.items.splice(0, this.pageSize));
+        },
+        sortByField: function(f) {
+          return (a, b) => {
+            return b[f] - a[f];
+          }
+        },
+        createDates: function (arr) {
+          return arr.map((e) => {
+            return Object.fromEntries(
+              Object.entries(e).map(([k, v]) => {
+                if (typeof v === 'string' && v.match(this.rxDate)) {
+                  return [k, new Date(v)];
+                } else {
+                  return [k, v];
+                }
+              })
+            );
+          });
+        },
+        formatDate: function (value) {
+          return value.toLocaleString('en-GB', this.dateOptions);
+        },
+        baseUrl: function () {
+          return `${this.url}${this.project}/contentTypes/${this.contentType}/entries?accessToken=${this.accessToken}&pageSize=1000&versionStatus=latest`;
+        },
+        getEntries: function (url, slug) {
+          fetch(url)
+            .then((response) => {
+              return response.json();
+            })
+            .then((data) => {
+              this.items = this.createDates(data.items);
+              if (this.items.length > 0) {
+                this.items.sort(this.sortByField("date"));
+              }
+              if (slug) {
+                this.setSelectedItem(
+                  this.items.find((elem) => elem.sys.slug === slug)
+                );
+              }
+              this.calculatePages();
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        },
+      },
+      mounted() {
+        this.title = document.title;
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+          get: (searchParams, prop) => searchParams.get(prop),
+        });
+        this.getEntries(this.baseUrl(), params.item);
+        window.addEventListener('popstate', this.back, false);
+      },
+      beforeDestroy() {
+        window.removeEventListener('popstate', this.back);
+      },
+    }).mount('#news');
+  </script>
 </html>

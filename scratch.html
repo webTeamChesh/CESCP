@@ -1,0 +1,41 @@
+
+        <nav role="navigation" aria-label="Results data navigation">
+          <ol class="pagination d-flex flex-wrap my-2 ms-0">
+            <li class="page-item" v-bind:class="{ disabled: currentPageIndex === 0 }">
+              <button
+                      class="page-link"
+                      type="button"
+                      v-bind:disabled="currentPageIndex === 0 ? true : false"
+                      v-on:click="goToPage(currentPageIndex)"
+                    >
+                      Previous
+                    </button>
+            </li>
+            <li v-for="pageBtn in pageBtns" class="page-item" v-bind:class="{ disabled: currentPageIndex === pageBtn - 1 }">
+              <button
+                      class="page-link"
+                      type="button"
+                      v-on:click="goToPage(pageBtn)"
+                    >
+                      {{ pageBtn}}
+                    </button>
+            </li>
+            <li class="page-item" v-bind:class="{ disabled: currentPageIndex + 1 >= pageCount }">
+              <button
+                      class="page-link"
+                      type="button"
+                      v-bind:disabled="currentPageIndex + 1 >= pageCount ? true : false"
+                      v-on:click="goToPage(currentPageIndex + 2)"
+                    >
+                      Next
+                    </button>
+            </li>
+          </ol>
+        </nav>
+        <div  class="api-results-info">
+            Total results: <strong>{{ totalCount }}</strong>
+          <p>
+            Current page:
+            <strong>{{ currentPageIndex+1 }}</strong>
+          </p>
+        </div>

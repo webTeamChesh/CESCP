@@ -16,13 +16,13 @@
       integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
       crossorigin="anonymous"
     ></script>
-    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
     <title>Cheshire East Children Safeguarding Partnership</title>
   </head>
   <body>
     <header class="my-head container-fluid px-0">
       <div class="px-3 py-3 row g-0 d-flex">
-        <div class="linkDiv col-6 col-lg-11 d-flex">
+        <div class="link-div col-6 col-lg-11 d-flex">
           <a title="Home" href="/"
             ><span class="link"
               ><span class="visually-hidden"
@@ -146,7 +146,7 @@
       <div class="row gy-2 my-3">
         <div class="col-12 col-md-4 d-flex">
           <div class="h-100">
-            <div class="linkDiv p-0 card h-100 container">
+            <div class="link-div p-0 card h-100 container">
               <span
                 id="children-card"
                 role="button"
@@ -173,7 +173,7 @@
         </div>
         <div class="col-12 col-md-4 d-flex">
           <div class="h-100">
-            <div class="linkDiv p-0 card h-100 container">
+            <div class="link-div p-0 card h-100 container">
               <span
                 role="button"
                 class="link"
@@ -199,7 +199,7 @@
         </div>
         <div class="col-12 col-md-4 d-flex">
           <div class="h-100">
-            <div class="linkDiv p-0 card h-100 container">
+            <div class="link-div p-0 card h-100 container">
               <span
                 class="link"
                 role="button"
@@ -226,38 +226,43 @@
       </div>
       <!-- News -->
       <div class="my-news px-3" id="news">
-        <h2 class="pt-3">Latest news</h2>
-        <div class="row gy-2 mb-3">
-          <div v-for="item in news" class="col-12 col-md-4">
-            <div class="linkDiv card p-0 h-100 container position-relative">
-              <a :title="item.title" :href="`/news.html?item=${item.sys.slug}`">
-                <span class="link"></span>
-              </a>
-              <img
-                v-if="item.image !== null"
-                class="img-fluid img-card-top"
-                v-bind:src="`https://www.cescp.org.uk/${item.image.asset.sys.uri}?format=webp`"
-                v-bind:alt="item.image.altText"
-              />
-              <div class="card-body">
-                <div class="row h-100 d-flex">
-                  <div class="col-12">
-                    <h3 class="mb-1 fs-4 text-center">
-                      <strong>{{ item.title }}</strong>
-                    </h3>
-                    <p class="text-center">{{formatDate(item.date)}}</p>
-                    <p>{{item.summary}}</p>
+        <div>
+          <h2 class="pt-3">Latest news</h2>
+          <div class="row gy-2 mb-3">
+            <div v-for="item in news" class="col-12 col-md-4">
+              <div class="link-div card p-0 h-100 container position-relative">
+                <a
+                  :title="item.title"
+                  :href="`/news.html?item=${item.sys.slug}`"
+                >
+                  <span class="link"></span>
+                </a>
+                <img
+                  v-if="item.image !== null"
+                  class="img-fluid img-card-top"
+                  v-bind:src="`https://www.cescp.org.uk/${item.image.asset.sys.uri}?format=webp`"
+                  v-bind:alt="item.image.altText"
+                />
+                <div class="card-body">
+                  <div class="row h-100 d-flex">
+                    <div class="col-12">
+                      <h3 class="mb-1 fs-4 text-center">
+                        <strong>{{ item.title }}</strong>
+                      </h3>
+                      <p class="text-center">{{formatDate(item.date)}}</p>
+                      <p>{{item.summary}}</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <p class="text-end">
+            <a class="btn btn-primary mb-2" href="/news.html"
+              >See all of our news</a
+            >
+          </p>
         </div>
-        <p class="text-end">
-          <a class="btn btn-primary mb-2" href="/news.html"
-            >See all of our news</a
-          >
-        </p>
       </div>
 
       <div class="my-map">
@@ -300,46 +305,29 @@
         data() {
           return {
             news: [],
-            accessToken: "QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I",
-            url: "https://cms-chesheast.cloud.contensis.com/api/delivery/projects/",
+            accessToken: 'QCpZfwnsgnQsyHHB3ID5isS43cZnthj6YoSPtemxFGtcH15I',
+            url: 'https://cms-chesheast.cloud.contensis.com/api/delivery/projects/',
             linkDepth: 5, // leave at 5 if unsure.
             item: undefined,
             year: new Date().getFullYear(),
-            fromDate: "",
-            toDate: "",
+            fromDate: '',
+            toDate: '',
             dateOptions: {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
             },
             rxDate: /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2})?(?:\.\d*)?Z?$/,
           };
         },
         methods: {
-          imgUrl: function (v) {
-            return `https://www.cescp.org.uk/${v}?format=webp`;
-          },
           createDates: function (arr) {
             return arr.map((e) => {
               return Object.fromEntries(
                 Object.entries(e).map(([k, v]) => {
-                  if (k.toLowerCase().includes("date")) {
-                    if (typeof v === "string" && v.match(this.rxDate)) {
-                      return [k, new Date(v)];
-                    } else if (typeof v === "object") {
-                      try {
-                        return [
-                          k,
-                          {
-                            from: new Date(v["from"]),
-                            to: new Date(v["to"]),
-                          },
-                        ];
-                      } catch (err) {
-                        return [k, v];
-                      }
-                    }
+                  if (typeof v === 'string' && v.match(this.rxDate)) {
+                    return [k, new Date(v)];
                   } else {
                     return [k, v];
                   }
@@ -348,10 +336,15 @@
             });
           },
           formatDate: function (value) {
-            return value.toLocaleString("en-GB", this.dateOptions);
+            return value.toLocaleString('en-GB', this.dateOptions);
           },
           baseUrl: function (project, cType) {
-            return `${this.url}${project}/contentTypes/${cType}/entries?accessToken=${this.accessToken}&pageSize=1000`;
+            return `${this.url}${project}/contentTypes/${cType}/entries?accessToken=${this.accessToken}&pageSize=1000&versionStatus=latest`;
+          },
+          sortByField: function (f) {
+            return (a, b) => {
+              return b[f] - a[f];
+            };
           },
           getEntries: function (project, cType) {
             fetch(this.baseUrl(project, cType))
@@ -361,10 +354,9 @@
               .then((data) => {
                 this.news = this.createDates(data.items);
                 if (this.news.length > 0) {
-                  this.news.sort();
+                  this.news.sort(this.sortByField('date'));
                 }
                 this.news = this.news.slice(0, 3);
-                console.log(this.news[0]);
               })
               .catch((error) => {
                 console.log(error);
@@ -372,11 +364,9 @@
           },
         },
         mounted() {
-          this.getEntries("localSafeguardingChildrensBoard", "news");
+          this.getEntries('localSafeguardingChildrensBoard', 'news');
         },
-      });
-
-      app.mount("#news");
+      }).mount('#news');
     </script>
   </body>
 </html>
